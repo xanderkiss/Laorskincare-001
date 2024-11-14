@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การจัดเรียงลำดับสินค้า</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #fffaf5;
+            color: #333;
+        }
+        h1 {
+            color: #ff7f9c;
+            text-align: center;
+            font-size: 2em;
+        }
+        p {
+            color: #555;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #ff9cb8;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff7f9c;
+        }
+        .product-list, .selected-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            list-style-type: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        .product-list li, .selected-list li {
+            width: 100px;
+            height: 100px;
+            background-color: #ffe6eb;
+            border: 2px solid #ff7f9c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9em;
+            color: #333;
+            transition: transform 0.3s, background-color 0.3s;
+            position: relative;
+        }
+        .product-list li:hover {
+            transform: scale(1.1);
+            background-color: #ffd6e0;
+        }
+        .selected {
+            background-color: #ffe6eb;
+            border-color: #ff7f9c;
+            color: #ff7f9c;
+        }
+        .benefit {
+            position: absolute;
+            bottom: -30px;
+            font-size: 0.8em;
+            color: #555;
+            width: 120px;
+            text-align: center;
+            white-space: normal;
+        }
+        footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1em;
+            color: #ff7f9c;
+        }
+    </style>
+</head>
+<body>
+    <h1>การจัดเรียงลำดับสินค้า</h1>
+    <p>คลิกที่สินค้าที่ต้องการเลือกเพื่อจัดเรียงตามลำดับ</p>
+    
+    <ul class="product-list" id="productList">
+        <!-- รายการสินค้าจะแสดงตรงนี้ -->
+    </ul>
+
+    <p>สินค้าที่เลือกไว้:</p>
+    <ul class="selected-list" id="selectedList">
+        <!-- รายการสินค้าที่เลือกและจัดเรียงจะแสดงตรงนี้ -->
+    </ul>
+
+    <div style="text-align: center;">
+        <button onclick="sortSelectedProducts('morning')">จัดเรียงตอนเช้า</button>
+        <button onclick="sortSelectedProducts('evening')">จัดเรียงตอนค่ำ</button>
+        <button onclick="clearSelectedProducts()">เคลียสินค้า</button>
+    </div>
+
+    <footer>
+        Láor SkinCare
+    </footer>
+
+    <script>
+        // รายการสินค้าและคุณสมบัติของสินค้า
+        const products = [
+            { name: "สินค้า A", morningOrder: 1, eveningOrder: 3, benefit: "" },
+            { name: "สินค้า B", morningOrder: 2, eveningOrder: 1, benefit: "" },
+            { name: "สินค้า C", morningOrder: 4, eveningOrder: 5, benefit: "" },
+            { name: "สินค้า D", morningOrder: 3, eveningOrder: 2, benefit: "" },
+            { name: "สินค้า E", morningOrder: 5, eveningOrder: 4, benefit: "" }
+        ];
+
+        let selectedProducts = [];
+
+        // แสดงรายการสินค้าเพื่อให้เลือก
+        function displayProductOptions() {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+            products.forEach(product => {
+                const li = document.createElement('li');
+                li.textContent = product.name;
+                li.onclick = () => selectProduct(product, li);
+                const benefit = document.createElement('div');
+                benefit.classList.add('benefit');
+                benefit.textContent = product.benefit;
+                li.appendChild(benefit);
+                productList.appendChild(li);
+            });
+        }
+
+        // ฟังก์ชันเลือกสินค้า
+        function selectProduct(product, listItem) {
+            if (!selectedProducts.includes(product)) {
+                selectedProducts.push(product);
+                listItem.classList.add('selected');
+                displaySelectedProducts(selectedProducts);
+            }
+        }
+
+        // ฟังก์ชันเรียงสินค้าที่เลือก
+        function sortSelectedProducts(timeOfDay) {
+            const sortedProducts = selectedProducts.slice().sort((a, b) => {
+                return timeOfDay === 'morning' ? a.morningOrder - b.morningOrder : a.eveningOrder - b.eveningOrder;
+            });
+            displaySelectedProducts(sortedProducts);
+        }
+
+        // ฟังก์ชันแสดงสินค้าที่จัดเรียงแล้ว
+        function displaySelectedProducts(productsToDisplay) {
+            const selectedList = document.getElementById('selectedList');
+            selectedList.innerHTML = '';
+            productsToDisplay.forEach((product, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${index + 1}. ${product.name}`;
+                selectedList.appendChild(li);
+            });
+        }
+
+        // ฟังก์ชันเคลียสินค้าที่เลือกทั้งหมด
+        function clearSelectedProducts() {
+            selectedProducts = [];
+            document.querySelectorAll('.selected').forEach(item => item.classList.remove('selected'));
+            displaySelectedProducts(selectedProducts);
+        }
+
+        // แสดงรายการสินค้าเริ่มต้น
+        displayProductOptions();
+    </script>
+</body>
+</html>
